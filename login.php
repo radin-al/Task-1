@@ -1,4 +1,3 @@
-
 <?php 
 session_start(); 
 ?>
@@ -48,6 +47,12 @@ session_start();
             font-size: 2.5rem;
             color: #0d6efd;
         }
+        .verification-input {
+            letter-spacing: 8px;
+            font-size: 2rem;
+            text-align: center;
+            font-weight: bold;
+        }
         @media (max-width: 576px) {
             .card {
                 margin-top: 2rem !important;
@@ -66,6 +71,38 @@ session_start();
                     <div class="row justify-content-center">
                         <div class="col-lg-5 col-md-8 col-sm-12">
                             <?php include('admin/message.php'); ?>
+                            
+                            <?php if(isset($_SESSION['temp_user_id']) && isset($_SESSION['temp_verification_sent'])): ?>
+                            <!-- Verification Code Form -->
+                            <div class="card shadow-lg border-0 rounded-lg mt-5">
+                                <div class="card-header text-center">
+                                    <span class="login-icon"><i class="fas fa-shield-alt"></i></span>
+                                    <h3 class="font-weight-light my-3 mb-0">Two-Factor Authentication</h3>
+                                    <p class="text-muted small">Enter the verification code sent to your email</p>
+                                </div>
+                                <div class="card-body">
+                                    <form action="verify_code.php" method="POST">
+                                        <div class="form-floating mb-3">
+                                            <input type="text" name="verification_code" required placeholder="Enter 6-digit code" 
+                                                   class="form-control verification-input" id="verification_code" 
+                                                   maxlength="6" pattern="[0-9]{6}" />
+                                            <label for="verification_code">Verification Code</label>
+                                        </div>
+                                        <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                                            <button class="btn btn-primary w-100 py-2" name="verify_btn" type="submit">
+                                                <i class="fas fa-check-circle"></i> Verify & Login
+                                            </button>
+                                        </div>
+                                        <div class="text-center mt-3">
+                                            <a href="resend_code.php" class="text-decoration-none small">Resend Code</a>
+                                            <span class="mx-2">|</span>
+                                            <a href="cancel_login.php" class="text-decoration-none small">Cancel</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <?php else: ?>
+                            <!-- Regular Login Form -->
                             <div class="card shadow-lg border-0 rounded-lg mt-5">
                                 <div class="card-header text-center">
                                     <span class="login-icon"><i class="fas fa-user-lock"></i></span>
@@ -89,6 +126,8 @@ session_start();
                                     </form>
                                 </div>
                             </div>
+                            <?php endif; ?>
+                            
                             <div class="text-center mt-3 text-white">
                                 <small>&copy; <?= date('Y'); ?> DOST XII Event QR</small>
                             </div>
@@ -100,5 +139,13 @@ session_start();
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="js/scripts.js"></script>
+    <script>
+        // Auto-submit when 6 digits are entered
+        document.getElementById('verification_code')?.addEventListener('input', function(e) {
+            if(this.value.length === 6) {
+                this.form.submit();
+            }
+        });
+    </script>
 </body>
 </html>
